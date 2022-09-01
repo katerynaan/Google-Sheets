@@ -1,0 +1,10 @@
+* {
+    box-sizing: border-box;
+    padding: 0 auto;
+    margin: 0;
+    border: none;
+}
+input {
+    outline: none;
+    padding-left: 7px
+}

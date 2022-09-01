@@ -8,5 +8,10 @@ module.exports = merge(config, {
   },
   devServer: {
     static: './dist',
+    open: {
+      app: {
+        name: 'mozilla',
+      },
+    },
   },
 });
