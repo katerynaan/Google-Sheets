@@ -10,6 +10,9 @@ export function toArray(string) {
 
 function placeCharInArray(string, i, array) {
   const char = string[i];
+  if (operators.includes(char) && i === 0) {
+    array.unshift('0');
+  }
   if (operators.includes(char)) {
     array[array.length - 1] = checkIfNum(array[array.length - 1]);
     array.push(char);
@@ -28,12 +31,12 @@ function placeCharInArray(string, i, array) {
 }
 
 function checkIfNum(item) {
-  console.log('item: ', item);
   if (!isNaN(item)) {
     return item;
   } else {
     const element = document.getElementsByClassName(`input_${item}`)[0];
-    if (element) return element.value;
-    else return item;
+    if (element) {
+      return !element.value ? 'NaN' : element.value;
+    } else return item;
   }
 }

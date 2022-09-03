@@ -3,6 +3,7 @@ import {
   calculate,
   removeLastCharOperand,
   removeIfNotFormula,
+  navigateCells,
 } from './actions';
 
 let selectedCell;
@@ -10,31 +11,34 @@ let selectedCell;
 const onCellBlurred = (cellInput, globalInput) =>
   cellInput.addEventListener('blur', ({ target }) => {
     removeLastCharOperand(target, globalInput);
-    console.log('c', calculate(target.value, selectedCell));
+    if (target.value[0]) calculate(target.value, target);
   });
 
 const onGlobalInputBlurred = (globalInput) =>
   globalInput.addEventListener('blur', ({ target }) => {
     removeLastCharOperand(target, selectedCell);
-    console.log('g', calculate(target.value, selectedCell));
+    if (target.value[0]) calculate(target.value, target);
   });
 
 const onCellKeyDown = (cellInput, globalInput) =>
   cellInput.addEventListener('keydown', ({ key, keyCode, target }) => {
-    syncInputs(target, globalInput, key, keyCode);
-    removeIfNotFormula(target, globalInput, key);
+    if (keyCode >= 37 && keyCode <= 40) navigateCells(target, key);
+    else {
+      syncInputs(target, globalInput, key, keyCode);
+      removeIfNotFormula(target, globalInput, key);
+    }
   });
 
 const onGlobalInputKeydown = (globalInput) =>
-  globalInput.addEventListener('keydown', ({ key, keyCode }) => {
+  globalInput.addEventListener('keydown', ({ key, keyCode, target }) => {
     syncInputs(globalInput, selectedCell, key, keyCode);
     removeIfNotFormula(target, selectedCell, key);
   });
 
 const onCellFocus = (cellInput, globalInput) =>
   cellInput.addEventListener('focus', ({ target }) => {
+    globalInput.value = target.value;
     selectedCell = target;
-    globalInput.value = cellInput.value;
   });
 
 export default {
