@@ -57,6 +57,9 @@
     -webkit-appearance: none;
     -moz-appearance: textfield;
 }
+.cell_input:disabled {
+    color: black
+}
 .cell_input:focus {
     border-color: transparent;
     outline: 1px solid rgb(0, 47, 255);

@@ -48,4 +48,6 @@ function addEvents(cellInput, globalInput) {
   events.onCellKeyDown(cellInput, globalInput);
   events.onGlobalInputBlurred(globalInput);
   events.onGlobalInputKeydown(globalInput);
+  events.onSelect(cellInput);
+  events.onMouseIn(cellInput);
 }

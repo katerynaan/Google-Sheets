@@ -3,6 +3,7 @@ import { renderColumns } from './table-columns';
 import { renderRows } from './table-rows';
 
 import './table-controller.css';
+import { renderExistingStorageData } from './utils/storage';
 
 export default class Table {
   constructor(root) {
@@ -17,6 +18,7 @@ export default class Table {
     renderRows(rows);
     table.append(columns, rows);
     this.root.append(table);
+    renderExistingStorageData();
     initSelectedCell();
   }
 }
