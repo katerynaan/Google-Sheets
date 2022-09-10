@@ -1,5 +1,5 @@
-const amountOfColumns = Math.ceil(window.innerWidth / 100);
-const amountOfRows = Math.ceil(window.innerHeight / 30);
+const amountOfColumns = 27;
+const amountOfRows = 100;
 
 const fakeColumns = new Array(amountOfColumns).fill(0).map((item, i) => ({
   value: i == 0 ? '' : String.fromCharCode(64 + i),

@@ -1,7 +1,6 @@
 import { refreshCalculations } from './input-actions';
 
 export function setCellDataIntoStorage({ cellId, data }) {
-  console.log('settting into storage: ', cellId, data);
   const cell_data = JSON.parse(localStorage.getItem('cell_data')) || {
     formulas: {},
     numbers: {},

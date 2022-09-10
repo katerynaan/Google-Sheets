@@ -29,25 +29,24 @@ function renderCells(rowElement, row) {
       input.type = 'text';
 
       cell.appendChild(input);
-      reflectInput(input);
+      reflectInput(input, cell);
     }
     rowElement.appendChild(cell);
   });
 }
 
-function reflectInput(cellInput) {
+function reflectInput(cellInput, cell) {
   const globalInput = document.getElementsByClassName(
     'value-formula-wrapper'
   )[0];
-  addEvents(cellInput, globalInput);
+  addEvents(cellInput, globalInput, cell);
 }
 
-function addEvents(cellInput, globalInput) {
+function addEvents(cellInput, globalInput, cell) {
   events.onCellBlurred(cellInput, globalInput);
   events.onCellFocus(cellInput, globalInput);
   events.onCellKeyDown(cellInput, globalInput);
   events.onGlobalInputBlurred(globalInput);
   events.onGlobalInputKeydown(globalInput);
-  events.onSelect(cellInput);
-  events.onMouseIn(cellInput);
+  events.onSelect(cellInput, cell);
 }

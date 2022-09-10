@@ -1,4 +1,8 @@
-import { copy, paste } from './utils/data-transfer-actions';
+import {
+  copy,
+  deleteAllSelectedValues,
+  paste,
+} from './utils/data-transfer-actions';
 import {
   syncInputs,
   calculate,
@@ -6,7 +10,8 @@ import {
   setAsFormula,
   displayFormula,
 } from './utils/input-actions';
-import { navigateCells } from './utils/navigation-actions';
+import { navigateCells, removeSelectedCell } from './utils/navigation-actions';
+import { selectCellBasedOnRange } from './utils/selection-actions';
 import { setCellDataIntoStorage } from './utils/storage';
 
 let selectedCell;
@@ -49,12 +54,14 @@ function handleHotKeys(e) {
     hotKeys = true;
   } else if (ctrlKey && key == 'c') {
     e.preventDefault();
-    copy([target.value, '|', '125', '45', '|', '234']);
+    copy();
     hotKeys = true;
   } else if (ctrlKey && key == 'v') {
     e.preventDefault();
     paste(target);
     hotKeys = true;
+  } else if (keyCode === 46) {
+    deleteAllSelectedValues();
   }
   return hotKeys;
 }
@@ -69,26 +76,52 @@ const onCellFocus = (cellInput, globalInput) =>
   cellInput.addEventListener('focus', ({ target }) => {
     globalInput.value = target.value;
     displayFormula(target, globalInput);
+    removeSelectedCell(cellInput);
     selectedCell = target;
   });
-let start;
-let end;
-const onSelect = (cellInput) => {
-  cellInput = cellInput.closest('.cell');
-  cellInput.addEventListener('mousedown', (e) => {
+
+let startCellSelected;
+let endCellSelected;
+const onSelect = (cellInput, cell) => {
+  cell.addEventListener('mousedown', (e) => {
     e.preventDefault();
-    start = cellInput;
-    end = cellInput;
+    removeSelectedCell(cellInput);
+    startCellSelected = cell;
   });
-  cellInput.addEventListener('mouseup', () => {
-    console.log('start: ', start, 'end: ', end);
+  cell.addEventListener('mouseup', () => {
+    endCellSelected = cell;
+    if (startCellSelected.classList[1] === endCellSelected.classList[1]) {
+      removeSelectedCell(cellInput);
+      cellInput.focus();
+      selectedCell = cellInput;
+    }
+    startCellSelected = null;
+    endCellSelected = null;
   });
-  cellInput.addEventListener('mouseover', (e) => {
-    if (end) end = cellInput;
+  cell.addEventListener('mouseover', () => {
+    if (startCellSelected) {
+      if (endCellSelected !== cell && endCellSelected)
+        selectCellBasedOnRange(startCellSelected, endCellSelected);
+      endCellSelected = cell;
+    }
+  });
+  cell.addEventListener('mouseout', () => {
+    if (startCellSelected) {
+      if (!endCellSelected) cell.classList.remove('cell_selected');
+      else trackSelectionDirection(cell);
+    }
   });
 };
 
-const onMouseIn = (cellInput) => {};
+function getCharIndex(cell) {
+  return cell.classList[1].charCodeAt(0);
+}
+
+function trackSelectionDirection(cell) {
+  if (getCharIndex(cell) < getCharIndex(endCellSelected)) {
+    cell.classList.remove('cell_selected');
+  }
+}
 
 export default {
   onCellBlurred,
@@ -97,5 +130,4 @@ export default {
   onGlobalInputBlurred,
   onGlobalInputKeydown,
   onSelect,
-  onMouseIn,
 };

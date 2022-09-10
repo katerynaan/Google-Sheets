@@ -32,3 +32,11 @@ export function navigate(targetCell, key) {
 export function navigateToNextCell(target) {
   navigateCells(target, 'ArrowDown').focus();
 }
+
+export async function removeSelectedCell(newCellInput, tag) {
+  const selected = document.querySelectorAll('.cell_selected');
+  for (let i = 0; i < selected.length; i++) {
+    await selected[i].classList.remove('cell_selected');
+  }
+  newCellInput.closest('.cell').classList.add('cell_selected');
+}

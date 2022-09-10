@@ -1,5 +1,5 @@
 :root {
-    --grid-columns: 50px repeat(auto-fill, minmax(100px, 1fr));
+    --grid-columns: 50px repeat(auto-fit, minmax(100px, 1fr));
     --grid-rows: auto;
     --height: 30px
 }
@@ -15,6 +15,7 @@
 .table_columns, .table_rows {
     display: grid;
     grid-template-rows: var(--grid-rows);
+    min-width: 3000px;
 }
 .table_columns {
     grid-template-columns: var(--grid-columns);
@@ -24,6 +25,9 @@
     grid-template-columns: var(--grid-columns);
     text-align: center;
     height: var(--height);
+}
+.row-cell_selected:first-child {
+    background-color: rgba(0, 0, 255, 0.542);
 }
 .column-cell {
     text-align: center;
@@ -49,6 +53,10 @@
     border-left: 1px solid rgb(195, 195, 195);
     padding: 2px;
     border-radius: 0px;
+    background-color: transparent;
+}
+.cell_selected {
+    border: 1px solid blue;
 }
 .cell_input {
     width: 100%;
@@ -56,11 +64,12 @@
     border-color: transparent;
     -webkit-appearance: none;
     -moz-appearance: textfield;
+    background-color: transparent;
 }
 .cell_input:disabled {
     color: black
 }
 .cell_input:focus {
     border-color: transparent;
-    outline: 1px solid rgb(0, 47, 255);
+    outline: none
 }

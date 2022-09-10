@@ -26,4 +26,5 @@ export default class Table {
 function initSelectedCell() {
   const A1 = document.getElementsByClassName('input_A1')[0];
   A1.focus();
+  A1.closest('.cell').classList.add('cell_selected');
 }
