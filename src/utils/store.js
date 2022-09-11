@@ -30,19 +30,14 @@ class Store {
   }
   selectRange(endCell) {
     const endCellInfo = this.destructureCell(endCell);
-    let tag;
     if (endCellInfo.cellCol > this.lastInfo.cellCol) {
       this.addColRemainRow(endCellInfo);
-      tag = 'addCol';
     } else if (endCellInfo.cellRow > this.lastInfo.cellRow) {
       this.addRowRemainCol(endCellInfo);
-      tag = 'addRow';
     } else if (endCellInfo.cellCol < this.lastInfo.cellCol) {
       this.deleteColRemainRow(endCellInfo);
-      tag = 'deleteCol';
     } else if (endCellInfo.cellRow < this.lastInfo.cellRow) {
       this.deleteRowRemainCol(endCellInfo);
-      tag = 'deleteRow';
     }
     this.lastInfo = endCellInfo;
   }
@@ -83,7 +78,7 @@ class Store {
     );
   }
   destructureCell(cell) {
-    const cellRow = cell.classList[1].substring(1); //12
+    const cellRow = +cell.classList[1].substring(1); //12
     const cellCol = cell.classList[1].charCodeAt(0); //64(A)
     return { cellRow, cellCol };
   }
@@ -103,9 +98,8 @@ class Store {
     }
   }
   removeRange(startCol, endCol, startRow, endRow, tag) {
-    console.log(startCol, endCol, startRow, endRow, tag);
-    for (let i = +startRow; i <= +endRow; i++) {
-      for (let j = +startCol; j <= +endCol; j++) {
+    for (let i = startRow; i <= endRow; i++) {
+      for (let j = startCol; j <= endCol; j++) {
         const element = document.getElementsByClassName(
           String.fromCharCode(j) + i
         )[0];

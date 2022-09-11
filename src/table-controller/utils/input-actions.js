@@ -13,11 +13,12 @@ export function calculate(string, target) {
   }
 }
 
-export function syncInputs(source, output, key, keyCode) {
+export function syncInputs(source, output, key, keyCode, global) {
   const printValue = _.debounce(() => {
     if (key === 'Enter') {
       //submit the data
-      navigateToNextCell(source);
+      if (global) navigateToNextCell(output);
+      else navigateToNextCell(source);
     } else if (keyCode === 32) {
       //remove space at the end of the number
       source.value = source.value.slice(0, -1);

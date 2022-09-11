@@ -32,3 +32,14 @@ export function renderExistingStorageData() {
   }
   return refreshCalculations();
 }
+
+export function removeCellFromStorage(cell) {
+  const cell_data = JSON.parse(localStorage.getItem('cell_data')) || {
+    formulas: {},
+    numbers: {},
+  };
+  const cellId = cell.classList[1].replace('input_', '');
+  delete cell_data.formulas[cellId];
+  delete cell_data.numbers[cellId];
+  sessionStorage.setItem('cell_data', JSON.stringify(cell_data));
+}

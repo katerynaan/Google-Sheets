@@ -29,7 +29,7 @@ export function paste(startCell) {
       startCell = navigate(startCell, 'ArrowDown')[0];
     }
   }
-  startCell.focus();
+  if (startCell) startCell.focus();
   store.removeSelections();
 }
 
@@ -38,6 +38,5 @@ export function deleteAllSelectedValues() {
   for (let i = 0; i < selected.length; i++) {
     const input = selected[i].getElementsByTagName('input')[0];
     input.value = '';
-    input.focus();
   }
 }

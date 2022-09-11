@@ -4,6 +4,7 @@ import { renderRows } from './table-rows';
 
 import './table-controller.css';
 import { renderExistingStorageData } from './utils/storage';
+import store from '../utils/store';
 
 export default class Table {
   constructor(root) {
@@ -26,5 +27,7 @@ export default class Table {
 function initSelectedCell() {
   const A1 = document.getElementsByClassName('input_A1')[0];
   A1.focus();
-  A1.closest('.cell').classList.add('cell_selected');
+  const cell = A1.closest('.cell');
+  cell.classList.add('cell_selected');
+  store.pushInitialSelection(cell);
 }

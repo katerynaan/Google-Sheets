@@ -15,6 +15,7 @@ import { setCellDataIntoStorage } from './utils/storage';
 import store from '../utils/store';
 
 let selectedCell;
+let shiftKeyOn = false;
 
 const onCellBlurred = (cellInput, globalInput) =>
   cellInput.addEventListener('blur', ({ target }) => {
@@ -43,6 +44,7 @@ const onCellKeyDown = (cellInput, globalInput) =>
     if (!isHotKeys) {
       setAsFormula(target, globalInput, key);
       syncInputs(target, globalInput, key, keyCode);
+      shiftKeyOn = false;
     }
   });
 
@@ -50,8 +52,10 @@ function handleHotKeys(e) {
   const { key, keyCode, target, ctrlKey, shiftKey } = e;
   let hotKeys = false;
   if (keyCode >= 37 && keyCode <= 40) {
-    navigateCells(target, key);
+    const newCell = navigateCells(target, key);
     if (shiftKey) {
+      shiftKeyOn = true;
+      store.selectRange(newCell.closest('.cell'));
     }
     hotKeys = true;
   } else if (ctrlKey && key == 'c') {
@@ -72,16 +76,15 @@ function handleHotKeys(e) {
 const onGlobalInputKeydown = (globalInput) =>
   globalInput.addEventListener('keydown', ({ key, keyCode, target }) => {
     setAsFormula(target, selectedCell, key);
-    syncInputs(globalInput, selectedCell, key, keyCode);
+    syncInputs(globalInput, selectedCell, key, keyCode, true);
   });
 
 const onCellFocus = (cellInput, globalInput) =>
   cellInput.addEventListener('focus', ({ target }) => {
     globalInput.value = target.value;
     displayFormula(target, globalInput);
-    removeSelectedCell(cellInput);
+    if (!shiftKeyOn) removeSelectedCell(cellInput);
     selectedCell = target;
-    store.pushInitialSelection(cellInput.closest('.cell'));
   });
 
 let startCellSelected;
@@ -99,6 +102,7 @@ const onSelect = (cellInput, cell) => {
       removeSelectedCell(cellInput);
       cellInput.focus();
       selectedCell = cellInput;
+      store.pushInitialSelection(cellInput.closest('.cell'));
     }
     startCellSelected = null;
     endCellSelected = null;
