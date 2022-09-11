@@ -1,7 +1,8 @@
+import store from '../../utils/store';
 import { navigate } from './navigation-actions';
 
 export function copy() {
-  const selected = document.querySelectorAll('.cell_selected');
+  const selected = store.currentSelected();
   let initialRow = +selected[0].classList[1].substring(1);
   const data = [];
   for (let i = 0; i < selected.length; i++) {
@@ -33,7 +34,7 @@ export function paste(startCell) {
     }
   }
   startCell.focus();
-  sessionStorage.removeItem('copied');
+  store.removeSelections();
 }
 
 export function deleteAllSelectedValues() {

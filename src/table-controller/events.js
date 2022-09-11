@@ -13,6 +13,7 @@ import {
 import { navigateCells, removeSelectedCell } from './utils/navigation-actions';
 import { selectCellBasedOnRange } from './utils/selection-actions';
 import { setCellDataIntoStorage } from './utils/storage';
+import store from '../utils/store';
 
 let selectedCell;
 
@@ -78,6 +79,7 @@ const onCellFocus = (cellInput, globalInput) =>
     displayFormula(target, globalInput);
     removeSelectedCell(cellInput);
     selectedCell = target;
+    store.removeSelections();
   });
 
 let startCellSelected;
@@ -86,6 +88,7 @@ const onSelect = (cellInput, cell) => {
   cell.addEventListener('mousedown', (e) => {
     e.preventDefault();
     removeSelectedCell(cellInput);
+    store.pushInitialSelection(cell);
     startCellSelected = cell;
   });
   cell.addEventListener('mouseup', () => {
@@ -101,7 +104,7 @@ const onSelect = (cellInput, cell) => {
   cell.addEventListener('mouseover', () => {
     if (startCellSelected) {
       if (endCellSelected !== cell && endCellSelected)
-        selectCellBasedOnRange(startCellSelected, endCellSelected);
+        store.selectRange(endCellSelected);
       endCellSelected = cell;
     }
   });
