@@ -1,73 +1,130 @@
 class Store {
   constructor() {
-    this.selected = [];
+    //this.selected = [];
+    this.selected = {}; //{"65": [cellA1, cellA2], "66": [cellB1, cellB2]};
+    this.startInfo = {};
+    this.lastInfo = {};
+    this.selectedName = 'cell_selected';
   }
+  tags = {
+    pushRow: (element, j, i) =>
+      this.selected[j]
+        ? this.selected[j].push(element)
+        : (this.selected[j] = [element]),
+    deleteRow: (element, j, i) => this.selected[j].shift(),
+    pushCol: (element, j, i) =>
+      this.selected[j]
+        ? this.selected[j].push(element)
+        : (this.selected[j] = [element]),
+    deleteCol: (element, j, i) =>
+      this.selected[j].length > 0
+        ? this.selected[j].pop()
+        : delete this.selected[j],
+  };
   pushInitialSelection(cell) {
-    this.selected.push(cell);
-    cell.classList.add('cell_selected');
+    const { cellCol, cellRow } = this.destructureCell(cell);
+    this.startInfo = { cellCol, cellRow };
+    this.lastInfo = { cellCol, cellRow };
+    this.selected = {};
+    this.selected[cellCol + ''] = [cell];
   }
   selectRange(endCell) {
-    const selectedClassName = 'cell_selected';
-    const startRow = +this.selected[0].classList[1].substring(1);
-    const selectedRow =
-      +this.selected[this.selected.length - 1].classList[1].substring(1);
-    const endRow = +endCell.classList[1].substring(1);
-    const startCol = this.selected[0].classList[1].charCodeAt(0);
-    const selectedCol =
-      this.selected[this.selected.length - 1].classList[1].charCodeAt(0);
-    const endCol = endCell.classList[1].charCodeAt(0);
-    if (endCol > selectedCol) {
-      this.addRange(endCol, endCol, selectedRow, endRow, selectedClassName);
-    } else if (endCol < selectedCol) {
-      this.removeRange(endCol, selectedCol, endRow, endRow, selectedClassName);
-    } else if (endRow > selectedRow) {
-      this.addRange(startCol, endCol, startRow, endRow, selectedClassName);
-    } else {
-      this.removeRange(
-        startCol,
-        selectedCol,
-        endRow,
-        selectedRow,
-        selectedClassName
-      );
+    const endCellInfo = this.destructureCell(endCell);
+    let tag;
+    if (endCellInfo.cellCol > this.lastInfo.cellCol) {
+      this.addColRemainRow(endCellInfo);
+      tag = 'addCol';
+    } else if (endCellInfo.cellRow > this.lastInfo.cellRow) {
+      this.addRowRemainCol(endCellInfo);
+      tag = 'addRow';
+    } else if (endCellInfo.cellCol < this.lastInfo.cellCol) {
+      this.deleteColRemainRow(endCellInfo);
+      tag = 'deleteCol';
+    } else if (endCellInfo.cellRow < this.lastInfo.cellRow) {
+      this.deleteRowRemainCol(endCellInfo);
+      tag = 'deleteRow';
     }
+    this.lastInfo = endCellInfo;
   }
-  removeRange(colStart, colEnd, rowStart, rowEnd, selectedClassName) {
-    console.log('range to remove: ', colStart, colEnd, rowStart, rowEnd);
-    for (let i = rowStart; i <= rowEnd; i++) {
-      for (let j = colStart; j <= colEnd; j++) {
+  addRowRemainCol(endCellInfo) {
+    this.addRange(
+      this.startInfo.cellCol,
+      endCellInfo.cellCol,
+      this.lastInfo.cellRow,
+      endCellInfo.cellRow,
+      'pushRow'
+    );
+  }
+  addColRemainRow(endCellInfo) {
+    this.addRange(
+      this.lastInfo.cellCol,
+      endCellInfo.cellCol,
+      this.startInfo.cellRow,
+      endCellInfo.cellRow,
+      'pushCol'
+    );
+  }
+  deleteColRemainRow(endCellInfo) {
+    this.removeRange(
+      this.lastInfo.cellCol,
+      this.lastInfo.cellCol,
+      this.startInfo.cellRow,
+      endCellInfo.cellRow,
+      'deleteCol'
+    );
+  }
+  deleteRowRemainCol(endCellInfo) {
+    this.removeRange(
+      this.startInfo.cellCol,
+      this.lastInfo.cellCol,
+      this.lastInfo.cellRow,
+      this.lastInfo.cellRow,
+      'deleteRow'
+    );
+  }
+  destructureCell(cell) {
+    const cellRow = cell.classList[1].substring(1); //12
+    const cellCol = cell.classList[1].charCodeAt(0); //64(A)
+    return { cellRow, cellCol };
+  }
+  addRange(startCol, endCol, startRow, endRow, tag) {
+    for (let i = startRow; i <= endRow; i++) {
+      for (let j = startCol; j <= endCol; j++) {
         const element = document.getElementsByClassName(
           String.fromCharCode(j) + i
         )[0];
-        this.selected = this.selected.filter(
-          (item) => item.classList[1] !== element.classList[1]
-        );
-        element.classList.remove(selectedClassName);
+        if (
+          !this.selected[j] ||
+          !this.selected[j].find((item) => item === element)
+        )
+          this.tags[tag](element, j + '', i);
+        element.classList.add(this.selectedName);
       }
     }
   }
-  addRange(colStart, colEnd, rowStart, rowEnd, selectedClassName) {
-    for (let i = rowStart; i <= rowEnd; i++) {
-      for (let j = colStart; j <= colEnd; j++) {
+  removeRange(startCol, endCol, startRow, endRow, tag) {
+    console.log(startCol, endCol, startRow, endRow, tag);
+    for (let i = +startRow; i <= +endRow; i++) {
+      for (let j = +startCol; j <= +endCol; j++) {
         const element = document.getElementsByClassName(
           String.fromCharCode(j) + i
         )[0];
-        element.classList.add(selectedClassName);
-        this.selected.push(element);
+        this.tags[tag](element, j + '', i);
+        element.classList.remove(this.selectedName);
       }
     }
   }
-  clearSelected() {
-    this.selected = [];
+  getSelected() {
+    return this.selected;
   }
   removeSelections() {
-    for (let i = 0; i < this.selected.length; i++) {
-      this.selected[i].classList.remove('cell_selected');
+    for (let col in this.selected) {
+      for (let i = 0; i < this.selected[col].length; i++) {
+        const cell = this.selected[col][i];
+        cell.classList.remove(this.selectedName);
+      }
     }
-    this.clearSelected();
-  }
-  currentSelected() {
-    return this.selected;
+    this.selected = {};
   }
 }
 

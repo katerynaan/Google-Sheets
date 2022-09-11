@@ -11,7 +11,6 @@ import {
   displayFormula,
 } from './utils/input-actions';
 import { navigateCells, removeSelectedCell } from './utils/navigation-actions';
-import { selectCellBasedOnRange } from './utils/selection-actions';
 import { setCellDataIntoStorage } from './utils/storage';
 import store from '../utils/store';
 
@@ -48,10 +47,12 @@ const onCellKeyDown = (cellInput, globalInput) =>
   });
 
 function handleHotKeys(e) {
-  const { key, keyCode, target, ctrlKey } = e;
+  const { key, keyCode, target, ctrlKey, shiftKey } = e;
   let hotKeys = false;
   if (keyCode >= 37 && keyCode <= 40) {
     navigateCells(target, key);
+    if (shiftKey) {
+    }
     hotKeys = true;
   } else if (ctrlKey && key == 'c') {
     e.preventDefault();
@@ -63,6 +64,7 @@ function handleHotKeys(e) {
     hotKeys = true;
   } else if (keyCode === 46) {
     deleteAllSelectedValues();
+    hotKeys = true;
   }
   return hotKeys;
 }
@@ -79,7 +81,7 @@ const onCellFocus = (cellInput, globalInput) =>
     displayFormula(target, globalInput);
     removeSelectedCell(cellInput);
     selectedCell = target;
-    store.removeSelections();
+    store.pushInitialSelection(cellInput.closest('.cell'));
   });
 
 let startCellSelected;
@@ -103,8 +105,7 @@ const onSelect = (cellInput, cell) => {
   });
   cell.addEventListener('mouseover', () => {
     if (startCellSelected) {
-      if (endCellSelected !== cell && endCellSelected)
-        store.selectRange(endCellSelected);
+      if (endCellSelected !== cell && endCellSelected) store.selectRange(cell);
       endCellSelected = cell;
     }
   });
