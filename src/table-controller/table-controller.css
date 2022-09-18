@@ -1,5 +1,5 @@
 :root {
-    --grid-columns: 50px repeat(auto-fit, minmax(100px, 1fr));
+    --grid-columns: 50px repeat(auto-fill, minmax(100px, 1fr));
     --grid-rows: auto;
     --height: 30px
 }
@@ -11,11 +11,18 @@
     font-weight: 100;
     color: gray;
     margin: 0 auto;
+    overflow: scroll;
+}
+.table-wrapper::-webkit-scrollbar{
+    display: none;
 }
 .table_columns, .table_rows {
     display: grid;
     grid-template-rows: var(--grid-rows);
-    min-width: 3000px;
+    min-width: 2700px;
+}
+.table_rows {
+    max-height:calc(100vh - 85px)
 }
 .table_columns {
     grid-template-columns: var(--grid-columns);

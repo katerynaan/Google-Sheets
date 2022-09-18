@@ -1,4 +1,4 @@
-class Store {
+class Selected {
   constructor() {
     //this.selected = [];
     this.selected = {}; //{"65": [cellA1, cellA2], "66": [cellB1, cellB2]};
@@ -122,4 +122,4 @@ class Store {
   }
 }
 
-export default new Store();
+export default new Selected();

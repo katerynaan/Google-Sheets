@@ -5,6 +5,7 @@ import { renderRows } from './table-rows';
 import './table-controller.css';
 import { renderExistingStorageData } from './utils/storage';
 import store from '../utils/store';
+import events from './events';
 
 export default class Table {
   constructor(root) {
@@ -21,6 +22,7 @@ export default class Table {
     this.root.append(table);
     renderExistingStorageData();
     initSelectedCell();
+    events.onTableScrolled(table, rows);
   }
 }
 

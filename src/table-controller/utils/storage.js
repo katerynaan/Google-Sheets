@@ -27,7 +27,7 @@ export function renderExistingStorageData() {
   for (let type in cell_data) {
     for (let cell in cell_data[type]) {
       const inputElement = document.getElementsByClassName('input_' + cell)[0];
-      inputElement.value = cell_data[type][cell];
+      if (inputElement) inputElement.value = cell_data[type][cell];
     }
   }
   return refreshCalculations();

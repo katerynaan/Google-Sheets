@@ -10,12 +10,24 @@ import {
   setAsFormula,
   displayFormula,
 } from './utils/input-actions';
-import { navigateCells, removeSelectedCell } from './utils/navigation-actions';
+import {
+  navigateCells,
+  removeSelectedCell,
+  virtualize,
+} from './utils/navigation-actions';
 import { setCellDataIntoStorage } from './utils/storage';
 import store from '../utils/store';
+import { createElement } from 'react';
+import { renderCells } from './utils/cells-renderer';
 
 let selectedCell;
 let shiftKeyOn = false;
+
+const onTableScrolled = (table, rows) => {
+  table.addEventListener('scroll', () => {
+    virtualize(table, rows);
+  });
+};
 
 const onCellBlurred = (cellInput, globalInput) =>
   cellInput.addEventListener('blur', ({ target }) => {
@@ -52,6 +64,12 @@ function handleHotKeys(e) {
   const { key, keyCode, target, ctrlKey, shiftKey } = e;
   let hotKeys = false;
   if (keyCode >= 37 && keyCode <= 40) {
+    if (key === 'ArrowDown' || key === 'ArrowUp') {
+      virtualize(
+        document.getElementsByClassName('table-wrapper')[0],
+        document.getElementsByClassName('table_rows')[0]
+      );
+    }
     const newCell = navigateCells(target, key);
     if (shiftKey) {
       shiftKeyOn = true;
@@ -132,6 +150,7 @@ function trackSelectionDirection(cell) {
 }
 
 export default {
+  onTableScrolled,
   onCellBlurred,
   onCellFocus,
   onCellKeyDown,

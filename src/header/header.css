@@ -6,7 +6,7 @@
     width: 100%;
     display: flex;
     margin-top: 25px;
-    border-top: var(--border)
+    border-top: var(--border);
 }
 .cell-selected {
     width: 100px;
