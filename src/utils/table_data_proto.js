@@ -9,4 +9,17 @@ const fakeRows = new Array(amountOfRows + 3).fill(0, 1).map((item, i) => ({
   value: i + '',
 }));
 
+export const getCellsData = () => {
+  return (
+    JSON.parse(localStorage.getItem('cell_data')) || {
+      formulas: {},
+      numbers: {},
+    }
+  );
+};
+
+export const setCellsData = (cell_data) => {
+  localStorage.setItem('cell_data', JSON.stringify(cell_data));
+};
+
 export default { fakeColumns, fakeRows };

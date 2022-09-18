@@ -1,7 +1,6 @@
-import { createElement } from '../utils/element_utils';
-import proto from '../utils/table_data_proto';
-import { renderCells } from './utils/cells-renderer';
-import events from './events';
+import { createElement } from '../../utils/element_utils';
+import proto from '../../utils/table_data_proto';
+import { renderCells } from '../utils/cells-renderer';
 
 const rowsSrc = proto.fakeRows;
 

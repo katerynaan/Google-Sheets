@@ -111,6 +111,9 @@ class Selected {
   getSelected() {
     return this.selected;
   }
+  getSelectedCell() {
+    return Object.values(this.selected)[0][0];
+  }
   removeSelections() {
     for (let col in this.selected) {
       for (let i = 0; i < this.selected[col].length; i++) {

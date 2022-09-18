@@ -2,13 +2,13 @@ import { toArray, reduceSortedArray } from './converters';
 import { navigateToNextCell } from './navigation-actions';
 const _ = require('lodash');
 
-const operators = ['+', '-', '/', '*', "^", "(", ")"];
+const operators = ['+', '-', '/', '*', '^', '(', ')'];
 
 export function calculate(string, target) {
   let array = [];
   if (string[0] === '=') {
     string = string.slice(1);
-    array = toArray(string);
+    array = toArray(string, target);
     if (target) target.value = reduceSortedArray(array);
   }
 }

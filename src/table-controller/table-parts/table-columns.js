@@ -1,5 +1,5 @@
-import { createElement } from '../utils/element_utils';
-import proto from '../utils/table_data_proto';
+import { createElement } from '../../utils/element_utils';
+import proto from '../../utils/table_data_proto';
 
 const columnsSrc = proto.fakeColumns;
 

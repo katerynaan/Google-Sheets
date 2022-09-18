@@ -1,11 +1,11 @@
 import { createElement } from '../utils/element_utils';
-import { renderColumns } from './table-columns';
-import { renderRows } from './table-rows';
+import { renderColumns } from './table-parts/table-columns';
+import { renderRows } from './table-parts/table-rows';
 
 import './table-controller.css';
 import { renderExistingStorageData } from './utils/storage';
 import store from '../utils/store';
-import events from './events';
+import events from './table-parts/cell_events';
 
 export default class Table {
   constructor(root) {

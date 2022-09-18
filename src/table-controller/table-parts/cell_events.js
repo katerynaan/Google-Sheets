@@ -2,23 +2,26 @@ import {
   copy,
   deleteAllSelectedValues,
   paste,
-} from './utils/data-transfer-actions';
+} from '../utils/data-transfer-actions';
 import {
   syncInputs,
   calculate,
   removeLastCharOperand,
   setAsFormula,
   displayFormula,
-} from './utils/input-actions';
+} from '../utils/input-actions';
 import {
   navigateCells,
   removeSelectedCell,
   virtualize,
-} from './utils/navigation-actions';
-import { setCellDataIntoStorage } from './utils/storage';
-import store from '../utils/store';
-import { createElement } from 'react';
-import { renderCells } from './utils/cells-renderer';
+} from '../utils/navigation-actions';
+import { setCellDataIntoStorage } from '../utils/storage';
+import store from '../../utils/store';
+import globalReducer from '../utils/redux/global-reducer';
+import {
+  refreshReferences,
+  updateReferenceValue,
+} from '../utils/redux/slices/referencesSlice';
 
 let selectedCell;
 let shiftKeyOn = false;
@@ -36,17 +39,10 @@ const onCellBlurred = (cellInput, globalInput) =>
       data: globalInput.value || target.value,
     });
     removeLastCharOperand(target, globalInput);
-    if (target.value) calculate(target.value, target);
-  });
-
-const onGlobalInputBlurred = (globalInput) =>
-  globalInput.addEventListener('blur', ({ target }) => {
-    setCellDataIntoStorage({
-      cellId: selectedCell.classList[1].replace('input_', ''),
-      data: target.value,
-    });
-    removeLastCharOperand(target, selectedCell);
-    if (target.value) calculate(target.value, target);
+    if (target.value) {
+      calculate(target.value, target);
+      globalReducer.dispatch(refreshReferences());
+    }
   });
 
 const onCellKeyDown = (cellInput, globalInput) =>
@@ -71,10 +67,14 @@ function handleHotKeys(e) {
       );
     }
     const newCell = navigateCells(target, key);
+
     if (shiftKey) {
       shiftKeyOn = true;
       store.selectRange(newCell.closest('.cell'));
+    } else {
+      store.pushInitialSelection(newCell.closest('.cell'));
     }
+
     hotKeys = true;
   } else if (ctrlKey && key == 'c') {
     e.preventDefault();
@@ -90,12 +90,6 @@ function handleHotKeys(e) {
   }
   return hotKeys;
 }
-
-const onGlobalInputKeydown = (globalInput) =>
-  globalInput.addEventListener('keydown', ({ key, keyCode, target }) => {
-    setAsFormula(target, selectedCell, key);
-    syncInputs(globalInput, selectedCell, key, keyCode, true);
-  });
 
 const onCellFocus = (cellInput, globalInput) =>
   cellInput.addEventListener('focus', ({ target }) => {
@@ -154,7 +148,5 @@ export default {
   onCellBlurred,
   onCellFocus,
   onCellKeyDown,
-  onGlobalInputBlurred,
-  onGlobalInputKeydown,
   onSelect,
 };
