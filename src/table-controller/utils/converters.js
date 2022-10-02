@@ -1,96 +1,104 @@
 import globalReducer from './redux/global-reducer';
 import { updateReferenceValue } from './redux/slices/referencesSlice';
 
-const operators = ['+', '-', '/', '*'];
-const priorityOperators = ['*', '/'];
-const calc = {
+const calcs = {
   '+': (a, b) => a + b,
   '-': (a, b) => a - b,
   '*': (a, b) => a * b,
   '/': (a, b) => a / b,
 };
 
-export function toArray(string, input) {
-  const array = [];
-  for (let i = 0; i < string.length; i++) {
-    placeCharInArray(string, i, array, input);
-  }
-  return array;
-}
-
-function placeCharInArray(string, i, array, input) {
-  const char = string[i];
-  if (operators.includes(char) && i === 0) {
-    array.unshift('0');
-  }
-  if (operators.includes(char)) {
-    array[array.length - 1] = checkIfNum(array[array.length - 1], input);
-    array.push(char);
-  } else if (i === string.length - 1 && !operators.includes(string[i - 1])) {
-    array[array.length - 1] = array[array.length - 1] + char;
-    array[array.length - 1] = checkIfNum(array[array.length - 1], input);
-  } else if (
-    !operators.includes(char) &&
-    !operators.includes(string[i - 1]) &&
-    array.length > 0
-  ) {
-    array[array.length - 1] = array[array.length - 1] + char;
-  } else {
-    array.push(char);
-  }
-}
-
-function checkIfNum(item, input) {
-  if (!isNaN(item)) {
-    return item;
-  } else {
-    const element = document.getElementsByClassName(`input_${item}`)[0];
-    if (element) {
-      if (input) {
-        const currentReeferencers =
-          globalReducer.getState().references.value[item];
-        if (!currentReeferencers) {
-          globalReducer.dispatch(
-            updateReferenceValue({
-              value: {
-                id: item,
-                data: input.classList[1].replace('input_', ''),
-              },
-            })
-          );
-        } else {
-          if (currentReeferencers.includes(item)) {
-            return { error: 'Recursive reference!' };
-          }
-        }
-        return !element.value ? 'NaN' : element.value;
+export function toArray(infix, input) {
+  var output = [];
+  var stack = [];
+  for (var i = 0; i < infix.length; i++) {
+    var ch = infix.charAt(i);
+    if (ch in calcs) {
+      while (
+        stack.length != 0 &&
+        stack[stack.length - 1] != '(' &&
+        getPrecedence(ch) <= getPrecedence(stack[stack.length - 1])
+      ) {
+        output.push(stack.pop());
       }
-    } else return item;
+      stack.push(ch);
+    } else if (ch == '(') {
+      stack.push(ch);
+    } else if (ch == ')') {
+      while (stack.length != 0 && stack[stack.length - 1] != '(') {
+        output.push(stack.pop());
+      }
+      stack.pop();
+    } else {
+      if (!(infix[i - 1] in calcs) && i !== 0) {
+        output[output.length - 1] += ch;
+        if (infix[i + 1] in calcs && isNaN(output[output.length - 1])) {
+          handleReferences(output);
+        }
+      } else output.push(ch);
+    }
+  }
+  while (stack.length != 0) {
+    output.push(stack.pop());
+  }
+  return output;
+}
+function getPrecedence(ch) {
+  if (ch == '+' || ch == '-') {
+    return 1;
+  } else if (ch == '*' || ch == '/') {
+    return 2;
+  } else {
+    return 0;
   }
 }
 
-export function reduceSortedArray(
-  array = ['12', '+', '8', '/', '2', '-', '6', '*', '2'],
-  i = 1,
-  passedPriorityOperators
-) {
-  if (array.length <= 1) return array[0];
-  if (i >= array.length && !passedPriorityOperators)
-    return reduceSortedArray(array, 1, true);
-  if (!passedPriorityOperators) {
-    if (priorityOperators.includes(array[i])) {
-      const left = +array[i - 1];
-      array[i - 1] = calc[array[i]](left, +array[i + 1]);
-      array.splice(i, 2);
-    }
-    return reduceSortedArray(array, i + 2);
-  } else {
-    if (array[0].error) return array[0].error;
-    const left = +array[0];
-    const right = +array[2];
-    const op = array[1];
-    array = array.slice(2);
-    array[0] = calc[op](left, right);
-    return reduceSortedArray(array, 1, true);
+function handleReferences(output, input) {
+  const element = document.getElementsByClassName(
+    'input_' + output[output.length - 1]
+  )[0];
+  if (element) {
+    output[output.length - 1] = element.value;
+    addReference(element, input);
   }
+}
+
+function addReference(element, input) {
+  if (input) {
+    const currentReeferencers = globalReducer.getState().references.value[item];
+    if (!currentReeferencers) {
+      globalReducer.dispatch(
+        updateReferenceValue({
+          value: {
+            id: item,
+            data: input.classList[1].replace('input_', ''),
+          },
+        })
+      );
+    } else {
+      if (currentReeferencers.includes(item)) {
+        return { error: 'Recursive reference!' };
+      }
+    }
+    return !element.value ? 'NaN' : element.value;
+  }
+}
+
+export function reduceSortedArray(postfix) {
+  const res = [];
+  const stack = [];
+  for (let i = 0; i < postfix.length; i++) {
+    const item = postfix[i];
+    if (item in calcs) {
+      stack.push(item);
+    } else {
+      res.push(item);
+    }
+  }
+  while (stack.length) {
+    const right = +res.pop();
+    const left = +res.pop();
+    res.push(calcs[stack.shift()](left, right));
+  }
+  return res[0];
 }

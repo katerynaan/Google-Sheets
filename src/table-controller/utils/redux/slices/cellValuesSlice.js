@@ -9,11 +9,27 @@ const cellValuesDataSlice = createSlice({
     },
   },
   reducers: {
-    setNumbers: (state, action) => {
-      state.value.numbers = action.payload.value;
+    setCellValue: (state, { payload }) => {
+      const cell_data = {
+        numbers: { ...state.value.numbers },
+        formulas: { ...state.value.formulas },
+      };
+      const { cellId, data } = payload.value;
+      if (data[0] === '=') {
+        cell_data.formulas[cellId] = data;
+        delete cell_data['numbers'][cellId];
+      } else {
+        if (data) {
+          cell_data.numbers[cellId] = data;
+        } else {
+          delete cell_data.numbers[cellId];
+        }
+        delete cell_data.formulas[cellId];
+      }
+      state.value = cell_data;
     },
-    setFormulas: (state, action) => {
-      state.value.formulas = action.payload.value;
+    setValues: (state, { payload }) => {
+      state.value = payload.value;
     },
     updateValue: (state, { payload }) => {
       state.value[payload.value.type][payload.value.Id] = payload.value.data;
@@ -21,6 +37,6 @@ const cellValuesDataSlice = createSlice({
   },
 });
 
-export const { setNumbers, setFormulas, updateValue } =
+export const { setValues, setCellValue, updateValue } =
   cellValuesDataSlice.actions;
 export default cellValuesDataSlice.reducer;

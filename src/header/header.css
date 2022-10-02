@@ -31,3 +31,16 @@
     width: calc(100% - 150px);
     height: 25px;
 }
+
+.login-bar-wrapper {
+    min-width: 150px;
+        height: 25px;
+   line-height: 25px;
+   text-align: center;
+   border: 1px solid red
+}
+.login-bar-wrapper:hover{
+    background-color: rgba(255, 0, 98, 0.507);
+    cursor: pointer;
+    color: white
+}

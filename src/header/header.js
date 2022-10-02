@@ -1,6 +1,7 @@
 import { createElement } from '../utils/element_utils';
 import GlobalInput from './global-input';
 import './header.css';
+import LoginBar from './login-bar';
 
 export default class Header {
   constructor(root) {
@@ -15,6 +16,11 @@ export default class Header {
     fx.textContent = 'fx';
     header.append(cellSelected, fx);
     new GlobalInput(header);
+    new LoginBar(header);
     this.root.appendChild(header);
+  }
+  remove() {
+    const instance = document.getElementsByClassName('header-wrapper')[0];
+    instance.remove();
   }
 }

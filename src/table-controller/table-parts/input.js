@@ -1,8 +1,6 @@
 import { createElement } from '../../utils/element_utils';
-import { toArray } from '../utils/converters';
 import { calculate } from '../utils/input-actions';
 import globalReducer from '../utils/redux/global-reducer';
-import { updateReferenceValue } from '../utils/redux/slices/referencesSlice';
 import events from './cell_events';
 
 class Input {

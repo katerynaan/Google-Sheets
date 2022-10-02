@@ -10,9 +10,9 @@ import events from './table-parts/cell_events';
 export default class Table {
   constructor(root) {
     this.root = root;
-    this.render();
+    this.renderTable();
   }
-  render() {
+  renderTable() {
     const table = createElement('div', 'table-wrapper');
     const columns = createElement('div', 'table_columns');
     const rows = createElement('div', 'table_rows');
@@ -23,6 +23,10 @@ export default class Table {
     renderExistingStorageData();
     initSelectedCell();
     events.onTableScrolled(table, rows);
+  }
+  remove() {
+    const instance = document.getElementsByClassName('table-wrapper')[0];
+    instance.remove();
   }
 }
 

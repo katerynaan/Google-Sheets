@@ -1,5 +1,6 @@
 import { toArray, reduceSortedArray } from './converters';
 import { navigateToNextCell } from './navigation-actions';
+import globalReducer from './redux/global-reducer';
 const _ = require('lodash');
 
 const operators = ['+', '-', '/', '*', '^', '(', ')'];
@@ -59,7 +60,7 @@ export function setAsFormula(target, output, key) {
 }
 
 export function refreshCalculations() {
-  const cell_data = JSON.parse(localStorage.getItem('cell_data')) || {
+  const cell_data = globalReducer.getState().cellData.value || {
     formulas: {},
     numbers: {},
   };
@@ -72,7 +73,7 @@ export function refreshCalculations() {
 
 export function displayFormula(target, globalInput) {
   const cellId = target.classList[1].replace('input_', '');
-  const cell_data = JSON.parse(localStorage.getItem('cell_data')) || {
+  const cell_data = globalReducer.getState().cellData.value || {
     formulas: {},
     numbers: {},
   };
